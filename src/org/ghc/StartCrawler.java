@@ -34,12 +34,15 @@ public class StartCrawler {
 	}
 
 	public static void main(String[] args) {
-		if (args.length >= 3) {
+		System.out.println(args.length);
+		if (args.length != 3) {
 			throw new RuntimeException(
 					"It must have the three argument one argument contains the folder details ,2nd  argument contains searchContent and 3rd argument contains the replaceContent");
 		}
 		FileUtility fileUtility = new FileUtility();
 		File dirFolder = new File(args[0]);
+		
+		System.out.println(args[0]);
 
 		if (dirFolder.exists() && dirFolder.isDirectory()) {
 			List<File> files = FileUtility.getAllFilesFromRootDirectory(args[0]);
