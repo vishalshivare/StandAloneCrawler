@@ -47,10 +47,11 @@ public class FileUtility {
 					allContentInFile += line;
 				}
 				backupContentInFile = allContentInFile.replaceAll(searchContent, replaceContent);
-				if (backupContentInFile.equalsIgnoreCase(allContentInFile)) {
+				if (!backupContentInFile.equalsIgnoreCase(allContentInFile)) {
 					// content is found and replaced so log into log file
-					System.out.println("The searchContent is= " + searchContent + " The replace content is= "
-							+ replaceContent + " which is found in file= " + file.getName());
+					System.out.println("The searchContent = " + searchContent + " is found in this file= "
+							+ file.getName() + " and replaced with = " + replaceContent + "  content");
+
 				}
 				FileWriter fw = new FileWriter(file);
 				fw.write(backupContentInFile);
