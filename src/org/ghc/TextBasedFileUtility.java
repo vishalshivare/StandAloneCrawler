@@ -14,7 +14,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 public class TextBasedFileUtility {
+	private static final Logger LOGGER = Logger.getLogger(TextBasedFileUtility.class);
 
 	private Map<String, String> originalFileMapToTemporaryFile = null;
 	private int fileIdentifier = 0;
@@ -25,8 +28,12 @@ public class TextBasedFileUtility {
 
 	public void processAllFiles(String rootDirectoryPath, String searchText, String replaceText, File backUpFile,
 			String fileExtensions) throws IOException {
+		LOGGER.info("Entering method processAllFiles()::TextBasedFileUtility");
 		List<File> files = CommonFileUtility.getAllFilesFromRootDirectoryAccordingToFileExtensions(rootDirectoryPath,
 				fileExtensions);
+		/*
+		 * This if and else clause
+		 */
 		if (replaceText == null) {
 			for (File file : files) {
 				searchTextInFileAndLogIt(file, searchText);
@@ -47,6 +54,7 @@ public class TextBasedFileUtility {
 			}
 
 		}
+		LOGGER.info("Exiting method processAllFiles()::TextBasedFileUtility");
 
 	}
 
@@ -61,7 +69,7 @@ public class TextBasedFileUtility {
 			try (BufferedReader bufferReader = new BufferedReader(fileReader)) {
 				while ((line = bufferReader.readLine()) != null) {
 					++representingLineNumberOfFile;
-					Pattern r = Pattern.compile("\\b" + searchText);
+					Pattern r = Pattern.compile(searchText);
 					Matcher m = r.matcher(line);
 					if (m.find()) {
 						System.out.println("The searchContent = " + searchText + " is found in lineNumber="

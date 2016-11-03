@@ -7,13 +7,9 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,20 +19,17 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 
-public class StartCrawler {
-	private static final Logger LOGGER = Logger.getLogger(StartCrawler.class);
+public class StartCrawlerApp {
+	private static final Logger LOGGER = Logger.getLogger(StartCrawlerApp.class);
 	private JFrame jFrame;
 	private JTextField rootDirTextField;
-	private JTextField searchTextField;
-	private JTextField replaceTextField;
-	private JTextField showInformationInTextFild;
-	JButton findButton;
-	JButton replaceButton;
-	JButton resetButton;
-	JComboBox filePatterComboBox;
+	private JButton findButton;
+	private JButton replaceButton;
+	private JButton resetButton;
+
 	File backupFolder;
 
-	public StartCrawler() {
+	public StartCrawlerApp() {
 		backupFolder = new File("./backup");
 		backupFolder.mkdir();
 		initialize();
@@ -44,11 +37,10 @@ public class StartCrawler {
 
 	public static void main(String[] args) {
 		LOGGER.info("Entering method main()::StartCrawler");
-
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					StartCrawler startCrawler = new StartCrawler();
+					StartCrawlerApp startCrawler = new StartCrawlerApp();
 					startCrawler.jFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,7 +60,7 @@ public class StartCrawler {
 		jFrame = new JFrame();
 		jFrame.getContentPane().setFont(new Font("Verdana", Font.PLAIN, 15));
 		jFrame.getContentPane().setForeground(UIManager.getColor("Button.foreground"));
-		jFrame.setBounds(100, 100, 650, 650);
+		jFrame.setBounds(50, 60, 580, 400);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.getContentPane().setLayout(null);
 		jFrame.setTitle("Group Health");
@@ -115,61 +107,21 @@ public class StartCrawler {
 		});
 		broserButton.setBounds(454, 78, 89, 28);
 
-		JLabel searchLabel = new JLabel("Search Text");
-		searchLabel.setFont(font);
-		searchLabel.setBounds(14, 130, 119, 28);
-		searchTextField = new JTextField();
-		searchTextField.setColumns(15);
-		searchTextField.setBounds(176, 130, 250, 28);
-
-		JLabel replaceLabel = new JLabel("Replace Text");
-		replaceLabel.setFont(font);
-		replaceLabel.setBounds(14, 184, 156, 29);
-
-		replaceTextField = new JTextField();
-		replaceTextField.setColumns(15);
-		replaceTextField.setBounds(176, 187, 250, 28);
-
-		JLabel filePatternLabel = new JLabel("File Ptn Ext");
-		filePatternLabel.setFont(font);
-		filePatternLabel.setBounds(14, 248, 156, 29);
-
-		filePatterComboBox = new JComboBox();
-		filePatterComboBox.setFont(new Font("Vijaya", Font.PLAIN, 15));
-		filePatterComboBox.setToolTipText("Select");
-		filePatterComboBox.setForeground(UIManager.getColor("TextField.foreground"));
-		filePatterComboBox.setModel(new DefaultComboBoxModel(new String[] { "txt", "doc", "html/jhtml", "css", "js",
-				"xml", "xsl", "pdf", "html/css/js/jhtml/xsl/xml" }));
-		filePatterComboBox.setSelectedIndex(0);
-		filePatterComboBox.setBounds(176, 249, 250, 32);
-
 		findButton = new JButton("Find");
 		findButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				replaceButton.setEnabled(false);
 				LOGGER.info("Entering On click event of Find button's actionPerformed():: StartCrawler");
 
-				if (rootDirTextField.getText().isEmpty() || searchTextField.getText().isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Please enter the searchText as well as rootDirectory");
+				if (rootDirTextField.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Please enter the rootDirectory");
 
 				} else {
-					String selectedItem = filePatterComboBox.getSelectedItem().toString();
-					if (selectedItem.equalsIgnoreCase("pdf") || selectedItem.equalsIgnoreCase("doc")) {
-						JOptionPane.showMessageDialog(null,
-								"Find or replace features of pdf or doc file is not added yet, comming soon.........");
-					} else {
-						TextBasedFileUtility fileUtility = new TextBasedFileUtility();
-						try {
-							fileUtility.processAllFiles(rootDirTextField.getText().trim(),
-									searchTextField.getText().trim(), null, backupFolder, selectedItem);
-						} catch (IOException exc) {
-							LOGGER.error(
-									"Exception occured on click event of Find button's actionPerformed():: StartCrawler",
-									exc);
-						}
-					}
 
+					FindAndReplaceThreadPool threadPool = new FindAndReplaceThreadPool();
+					threadPool.startCrawlingInRootDir(rootDirTextField.getText().trim());
 				}
+
 				replaceButton.setEnabled(true);
 				LOGGER.info("Exiting On click event of Find button's actionPerformed():: StartCrawler");
 
@@ -183,30 +135,15 @@ public class StartCrawler {
 				LOGGER.info("Entering  Onclick event of Find/Replace button's actionPerformed():: StartCrawler");
 				findButton.setEnabled(false);
 
-				if (rootDirTextField.getText().isEmpty() || searchTextField.getText().isEmpty()
-						|| replaceTextField.getText().isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Please enter searchText, replaceText and rootDirectory");
+				if (rootDirTextField.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Please enter the rootDirectory");
+
 				} else {
-					String selectedItem = filePatterComboBox.getSelectedItem().toString();
-					if (selectedItem.equalsIgnoreCase("pdf") || selectedItem.equalsIgnoreCase("doc")) {
-						JOptionPane.showMessageDialog(null,
-								"Find or replace features of pdf or doc file is not added yet, comming soon.........");
-					} else {
 
-						TextBasedFileUtility fileUtility = new TextBasedFileUtility();
-						try {
-							fileUtility.processAllFiles(rootDirTextField.getText().trim(),
-									searchTextField.getText().trim(), replaceTextField.getText().trim(), backupFolder,
-									selectedItem);
-
-						} catch (IOException exc) {
-							LOGGER.error(
-									"Exception occured  Onclick event of Find/Replace button's actionPerformed():: StartCrawler",
-									exc);
-						}
-					}
-
+					FindAndReplaceThreadPool threadPool = new FindAndReplaceThreadPool();
+					threadPool.startCrawlingInRootDir(rootDirTextField.getText().trim());
 				}
+
 				findButton.setEnabled(true);
 				LOGGER.info("Exiting  Onclick event of Find/Replace button's actionPerformed():: StartCrawler");
 
@@ -219,34 +156,21 @@ public class StartCrawler {
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				LOGGER.info("Entering  Onclick event of Reset button's actionPerformed():: StartCrawler");
-				searchTextField.setText("");
-				replaceTextField.setText("");
+
 				rootDirTextField.setText("");
 				LOGGER.info("Exiting  Onclick event of Reset button's actionPerformed():: StartCrawler");
 
 			}
 		});
 
-		showInformationInTextFild = new JTextField();
-		showInformationInTextFild.setForeground(UIManager.getColor("Button.foreground"));
-		showInformationInTextFild.setColumns(10);
-		showInformationInTextFild.setBounds(176, 362, 367, 188);
-
 		jFrame.getContentPane().add(groupHealthLabel);
 		jFrame.getContentPane().add(rootDirLabel);
 		jFrame.getContentPane().add(rootDirTextField);
 		jFrame.getContentPane().add(broserButton);
 
-		jFrame.getContentPane().add(searchLabel);
-		jFrame.getContentPane().add(searchTextField);
-		jFrame.getContentPane().add(replaceLabel);
-		jFrame.getContentPane().add(replaceTextField);
-		jFrame.getContentPane().add(filePatternLabel);
-		jFrame.getContentPane().add(filePatterComboBox);
 		jFrame.getContentPane().add(findButton);
 		jFrame.getContentPane().add(replaceButton);
 		jFrame.getContentPane().add(resetButton);
-		jFrame.getContentPane().add(showInformationInTextFild);
 
 		LOGGER.info("Exiting method initialize()::StartCrawler");
 
