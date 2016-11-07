@@ -65,7 +65,7 @@ public class StartCrawlerApp {
 		jFrame.getContentPane().setLayout(null);
 		jFrame.setTitle("Group Health");
 
-		JLabel groupHealthLabel = new JLabel("GROUP HEALTH FIND AND REPLACE TOOL");
+		JLabel groupHealthLabel = new JLabel("Crawler Utility TOOL");
 		groupHealthLabel.setFont(new Font("Californian FB", Font.BOLD, 25));
 		groupHealthLabel.setForeground(SystemColor.textHighlight);
 		groupHealthLabel.setBounds(36, 12, 507, 38);

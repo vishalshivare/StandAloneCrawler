@@ -25,7 +25,7 @@ public class SearchTextInFileThread implements Runnable {
 	static {
 
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream("./searchResult.txt", true);
+			FileOutputStream fileOutputStream = new FileOutputStream("./searchResult.csv", true);
 
 			PrintStream printStream = new PrintStream(fileOutputStream);
 			System.setOut(printStream);
@@ -70,6 +70,7 @@ public class SearchTextInFileThread implements Runnable {
 				LOGGER.error("exceptin occured in catch block of run()::SearchTextInFileThread");
 			}
 		}
+		System.out.flush();
 		LOGGER.info("Exiting method run()::SearchTextInFileThread");
 
 	}

@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.ghc.thread.SearchTextInFileThread;
@@ -27,7 +26,7 @@ public class FindAndReplaceThreadPool {
 						+ " to process ,please choose valid root directory");
 			}
 
-			int noOfThreads = 500;
+			int noOfThreads = 10;
 			if (files.size() < noOfThreads) {
 				noOfThreads = files.size();
 			}
@@ -43,10 +42,6 @@ public class FindAndReplaceThreadPool {
 			LOGGER.info("Exiting method startCrawlingInRootDir()::FindAndReplaceThreadPool");
 
 			threadExecutor.shutdown();
-
-			if (!threadExecutor.awaitTermination(950, TimeUnit.MILLISECONDS)) {
-				threadExecutor.shutdownNow();
-			}
 
 		} catch (Exception exception) {
 			LOGGER.error("Exception occured in startCrawlingInRootDir()::FindAndReplaceThreadPool due to="
